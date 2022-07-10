@@ -1,135 +1,160 @@
-# Aldenir Luiz 03/10/2021
-
-from tkinter import Label, Tk, Frame, Button, PhotoImage
-from time import sleep
-import funcoes
+from tkinter import Tk, Frame, Button
+from random import choice
+import os
 
 
-class Janela:
+
+class Window:
+    # Construtor da janela.
     def __init__(self):
-        # widgets da janela principal.
-        self.window = Tk()
-        self.window.geometry("600x600")
-        self.frame = Frame(self.window)
-        self.frame.pack(expand="yes", fill="both")
-        self.digitados = list() # Histórico de escolhidos.
         self.numeros = [1,2,3,4,5,6,7,8,9]
+        self.matrix = [[1,2,3],[4,5,6],[7,8,9]] # Lista de colunas e linhas Cada sublista uma coluna, cada numero um widget.
+        self.sequencias = [
+            {1,2,3}, {4,5,6}, {7,8,9},  # Lista de cobinacoes possiveis para um vencedor.
+            {1,4,7}, {2,5,8}, {3,6,9},  # Necessario para a verificacao de combinacoes.
+            {1,5,9}, {3,5,7}]
         
-        img_0 = PhotoImage(file="img_O.png")
-        img_1 = PhotoImage(file="img_X.png")
-        # Containers que compoem as linhas.
-        self.frame_0 = Frame(self.frame, bg="green")
-        self.frame_0.pack(expand="yes", fill="both")
-        self.frame_1 = Frame(self.frame, bg="yellow")
-        self.frame_1.pack(expand="yes", fill="both")
-        self.frame_2 = Frame(self.frame, bg="red")
-        self.frame_2.pack(expand="yes", fill="both")
-       
-
-        # Primeira Linha de botoes -> armazenados no container: frame_0
-        self.bttLine_00 = Button(self.frame_0, relief="raised", width=3, height=4, highlightbackground="black", borderwidth=4, command=lambda: layout(1, self.bttLine_00, "pl"))
-        self.bttLine_00.pack(side="left", expand="yes", fill="both")
-        self.bttLine_01 = Button(self.frame_0, relief="raised",width=3, height=4, border=4, command=lambda: layout(2, self.bttLine_01, "pl"))
-        self.bttLine_01.pack(side="left", expand="yes", fill="both")
-        self.bttLine_02 = Button(self.frame_0, relief="raised",width=3, height=4, border=4, command=lambda: layout(3, self.bttLine_02, "pl"))
-        self.bttLine_02.pack(side="left", expand="yes", fill="both")
+        self.widgets = dict() # container dos widgets.
+        self.switch = True # switch de player, usado para alternar entre players
+        self.player_1 = set() # container de jogadas player1, forma a sequencia numerica de jogadas.
+        self.player_2 = set() # container de jogadas player2, forma a sequencia numerica de jogadas.
+        self.caminho = f'{os.path.dirname(__file__)}\\tictac.ico'
         
-        # Segunda Linha de botoes -> armazenados no container: frame_1
-        self.bttLine_03 = Button(self.frame_1, relief="raised",width=3, height=4, border=4, command=lambda: layout(4, self.bttLine_03, "pl"))
-        self.bttLine_03.pack(side="left", expand="yes", fill="both")
-        self.bttLine_04 = Button(self.frame_1, relief="raised",width=3, height=4, border=4, command=lambda: layout(5, self.bttLine_04, "pl"))
-        self.bttLine_04.pack(side="left", expand="yes", fill="both")
-        self.bttLine_05 = Button(self.frame_1, relief="raised",width=3, height=4, border=4, command=lambda: layout(6, self.bttLine_05, "pl"))
-        self.bttLine_05.pack(side="left", expand="yes", fill="both")
-
-        # Terceira Linha de botoes -> armazenados no container: frame_2
-        self.bttLine_06 = Button(self.frame_2, relief="raised",width=3, height=4, border=4, command=lambda: layout(7, self.bttLine_06, "pl"))
-        self.bttLine_06.pack(side="left", expand="yes", fill="both")
-        self.bttLine_07 = Button(self.frame_2, relief="raised",width=3, height=4, border=4, command=lambda: layout(8, self.bttLine_07, "pl"))
-        self.bttLine_07.pack(side="left", expand="yes", fill="both")
-        self.bttLine_08 = Button(self.frame_2, relief="raised",width=3, height=4, border=4, command=lambda: layout(9, self.bttLine_08, "pl"))
-        self.bttLine_08.pack(side="left", expand="yes", fill="both")
-
-
-        def layout(numero, widget, jogador):
-            """Captura O Nome e o Valor do Widget Clicado
-                a fim de Gerar um Evento de Configuracao no Widget
-                em Seguida Envia o Valor do Widget para Verfificacao.
-                :PARAM: numero; recebe o valor do widget.
-                :PARAM: widget; recebe o nome do widget a que foi atribuido a variavel.
-                :FUNCT: verificado(): Invoca a Função de verificação disparada por clic do botão
-                """
-            if numero not in self.numeros: # Verifica no histórico se o numero ja foi escolhido anteriormente.
-                print("escolha outro")
-                return False # Sai da função sem fazer alterações.
-            else:
-                self.numeros.remove(numero) # Adiciona o número escolhido ao histórico
-
-            if jogador == "cmp": # Verifica se o jogador e a maquina
-                 # Reconfigura o widget para a cor vermelha.
-                widget.configure(image=img_0, width=24, height=24) # Reconfigura o widget para a cor vermelha.
-            else:
-                 # Reconfigura o widget para a cor azul.
-                widget.configure(image=img_1, width=24, height=24)
-            veirficado = funcoes.verify(numero, jogador) # Chama a função de verificação, verifica se há combinação.
-            if veirficado: # Dispara o evento de fim de jogo caso a função retorne True.
-                sleep(0.5)
-                if jogador == "pl":
-                    nome = "VOCÊ"
-                    fim_jogo(nome)
-                else:
-                    nome = "Computador"
-                    fim_jogo(nome)
-            else: # continua o jogo se a função retornar False.
-                if jogador == "cmp":
-                    pass
-                else:
-                    botplayer()
-
-
-        def botplayer():
-            sleep(0.6)
-            escolha = funcoes.intelit()
-            print("escolhido: ", escolha)
-            widgets = {
-            1: self.bttLine_00, 2: self.bttLine_01, 3: self.bttLine_02,
-            4: self.bttLine_03, 5: self.bttLine_04, 6: self.bttLine_05,
-            7: self.bttLine_06, 8: self.bttLine_07, 9: self.bttLine_08}
-            try:
-                wid = widgets[escolha]
-                layout(escolha, wid, "cmp")
-            except KeyError:
-                fim_jogo("EMPATOU", True)
-
-
-        def fim_jogo(nome, empate=False):
-            if empate:
-                condicao = ""
-            else:
-                condicao = "VENCEU!!"
-
-            
-            # self.frame.forget() # Limpa todos os widgets do jogo.
-            self.frame_F = Frame(self.window, bg=None) # Container subtitudo
-            
-            self.text = Label(self.frame_F, text=f"{nome} {condicao}") # Mensagem de fim de jogo.
-            self.text.pack(expand="yes", fill="both")  # Construtor do widget text.
-            self.bt_R = Button(self.frame_F, text="JOGAR NOVAMENTE", command=lambda: Reiniciar())
-            self.bt_R.pack() # Construtor do widget bt_R.
-            self.frame_F.pack(expand="yes", fill="both")
-            if nome == "VOCÊ":
-                self.frame_F.configure(bg="green")
-                self.text.configure(bg="green")
-            
-
+        
+    def layout(self):
+        self.window = Tk() # Janela do Tkinter.
+        self.window.geometry('800x800') # Tamanho da janela.
+        self.window.iconbitmap(self.caminho) # Icone da janela.
+        self.window.title('Jogo da Velha') # Titulo da janela
+        self.mainframe = Frame(self.window) # Container principal do layout.
+        self.mainframe.pack(expand='yes', fill='both') # gerenciador do container.
+        self.but_clear = Button(self.mainframe, text='Recomecar', bg='white', font=('consolas', 16), command=lambda: self.clear())
+        self.but_clear.pack(expand='no', fill='none')
+        # Matriz da grade de widgets
+        for coluna in self.matrix:
+            self.frm_col = Frame(self.mainframe) # Container das colunas da grade.
+            for numero in coluna: 
+                self.frm_lin = Frame(self.frm_col) # Container dos botoes
+                self.but_num = Button(self.frm_lin, text=' ', bg='white', font=('consolas', 32)) # Widget do botao.
+                self.but_num.configure(command=lambda x=numero: self.comando(x)) # Configuracoes do botao.
+                self.but_num.pack(expand='yes', fill='both') # gerenciador do widget.
+                self.widgets[numero] = self.but_num # armazena os botoes para uso posterior.
+                self.frm_lin.pack(side='left', expand='yes', fill='both') # os widgets sao distribuidos a esquerda a cada nova coluna.
+            self.frm_col.pack(expand='yes', fill='both') # gerenciador do container.
+        self.window.mainloop() # estado de loop da janela.
+    # Fim da parte da janela.
     
-        def Reiniciar():
-            self.window.destroy()
-            funcoes.clear()
-            Janela()
+    # Funcao de reset.
+    def clear(self):
+        self.player_1 = set()
+        self.player_2 = set()
+        self.numeros = [1,2,3,4,5,6,7,8,9]
+        self.switch = True
+        self.window.destroy()
+        self.layout()
+        
+    # Funcao para verificar a sequencia, retorna caso nao haja correspondencia.
+    def verificador(self, seqc, player):
+        for sequencia in self.sequencias:
+            temp = sequencia & seqc # filtra os numeros para encontrar uma sequencia correspondente.
+            if temp in self.sequencias:
+                if player:
+                    print('Player 1 Vence!!!')
+                    for k in self.widgets.keys():
+                        self.desabilitar(k)
+                    for n in temp:
+                        self.widgets[n].configure(bg='cyan')
+                    return True
+                else:
+                    print('Player 2 Vence!!!')
+                    for k in self.widgets.keys():
+                        self.desabilitar(k)
+                    for n in temp:
+                        self.widgets[n].configure(bg='red')
+                    return True
+            else:
+                continue
+        else: return False
 
+    # Funcao de estado do widget, 'altera as propriedades dos botoes e faz a chamada de verificacao'
+    def comando(self, num):
+        self.desabilitar(num)
+        self.numeros.remove(num)
+        if self.switch: # Atende a condicao "True" do switch de players.
+            self.widgets[num].configure(text='X') # configura o texto do botao para "X"
+            self.widgets[num].configure(bg='blue') # configura a cor do botao para "azul"
+            self.player_1.add(num) # adiciona o valor numerico correspondente na matriz ao container do player1
+            if len(self.player_1) >= 2: # se houver 2 ou mais jogadas do player1, chama o verificador.
+                if self.verificador(self.player_1, True):
+                    return
+                else:
+                    self.player()
+            else:
+                self.switch = False # alterna entre players no switch.
+                self.comando(self.computador())
+                    
+        else: # Atende a condicao "False" do switch de players.
+            self.widgets[num].configure(text='O') # configura o texto do botao para "O"
+            self.widgets[num].configure(bg='green') # configura a cor do botao para "verde"
+            self.player_2.add(num) # adiciona o valor numerico correspondente na matriz ao container do player2
+            self.switch = True # alterna entre players no switch.
             
-        self.window.mainloop() # Mantem a janela.
+            if len(self.player_2) > 2:# se houver mais de 2 jogadas do player2, chama o verificador.
+                if self.verificador(self.player_2, False):
+                    return
+            else: return
+            
+    def computador(self) -> int: # BotPlayer
+        str_temp_p = str_temp_c = list()
+        if len(self.player_1) >= 2 or len(self.player_2) >= 2:
+            for x in self.numeros:
+                if self.verify(self.player_2, x):
+                    return x
+                elif self.verify(self.player_1, x):
+                    str_temp_p.append(x)
+            else:
+                if len(str_temp_p) > 0:
+                    return str_temp_c[0]
+                else:
+                    value = self.choicer()
+                    return value
+        else:
+            value = self.choicer()
+            return value
+        
+        
+    def player(self) -> None:
+        if len(self.numeros) > 0:
+            self.switch = False # alterna entre players no switch.
+            escolha = self.computador()
+            self.player_2.add(escolha)
+            self.comando(escolha)
+        else:
+            print('EMPATE')
+            for widget in self.widgets.values():
+                widget.configure(bg='yellow')
+            return
 
+    def verify(self, sec, num) -> bool:
+        for sequencia in self.sequencias:
+            temp = sequencia & sec
+            temp.add(num)
+            if temp == sequencia:
+                return True
+            else: continue
+        else:
+            return False
 
-Janela()
+    def choicer(self) -> int:
+        temp = ''
+        for x in self.numeros:
+            temp += temp+str(x)
+        return int(choice(temp))
+
+    def desabilitar(self, num) -> None:
+        self.widgets[num].configure(activebackground='red', command=lambda: print('desabilitado'))
+        return
+        
+        
+janela = Window() # Instanciacao do objeto janela.
+janela.layout()
