@@ -1,9 +1,9 @@
 # jogo_da_velha
-Jogo da Velha com GUI Tkinter. Otimo para estudos
+Projeto de estudos Jogo da Velha com GUI Tkinter.
 
 MIT License
 
-Copyright (c) 2021 Aldenir Luiz
+Copyright (c) 2021-2022 Aldenir Luiz
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
